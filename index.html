@@ -234,7 +234,7 @@ transform:scale(1.08);
 }
 
 .carrito{
-transition: right 0.4s ease;
+transition: right 0.3s ease;
 }
 
 .card h3{
@@ -407,6 +407,24 @@ font-size:18px;
 margin-bottom:10px;
 }
 
+/* BOTÓN CERRAR CARRITO */
+.cerrar-carrito{
+position:absolute;
+top:10px;
+right:10px;
+background:transparent;
+border:none;
+color:white;
+font-size:22px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.cerrar-carrito:hover{
+color:red;
+transform:scale(1.2);
+}
+
 </style>
 
 <script>
@@ -518,8 +536,13 @@ carrito.splice(i,1)
 actualizar()
 }
 
-function abrirCarrito(){
-document.getElementById("carrito").classList.toggle("activo")
+function abrirCarrito(e){
+e.stopPropagation();
+document.getElementById("carrito").classList.toggle("activo");
+}
+
+function cerrarCarrito(){
+    document.getElementById("carrito").classList.remove("activo");
 }
 
 function enviarWhatsApp(){
@@ -588,16 +611,70 @@ estado.style.color = abierto ? "#00ff88" : "red"
 verificarEstadoGym()
 setInterval(verificarEstadoGym, 60000)
 
+document.addEventListener("DOMContentLoaded", function(){
+
+// ==========================
+// CERRAR AL HACER CLICK FUERA
+// ==========================
 document.addEventListener("click", function(e){
 
-let carritoPanel = document.getElementById("carrito")
-let icono = document.querySelector(".carrito-icon")
+const carritoPanel = document.getElementById("carrito");
 
-if(!carritoPanel.contains(e.target) && !icono.contains(e.target)){
-carritoPanel.classList.remove("activo")
+if(
+    carritoPanel.classList.contains("activo") &&
+    !carritoPanel.contains(e.target) &&
+    !e.target.closest(".carrito-icon")
+){
+    carritoPanel.classList.remove("activo");
 }
 
-})
+});
+
+// ==========================
+// EVITAR CIERRE AL HACER CLICK DENTRO
+// ==========================
+document.getElementById("carrito").addEventListener("click", function(e){
+e.stopPropagation();
+});
+
+// ==========================
+// 🔥 SWIPE PARA CERRAR (CELULAR)
+// ==========================
+let startX = 0;
+let currentX = 0;
+let isDragging = false;
+
+const carritoPanel = document.getElementById("carrito");
+
+carritoPanel.addEventListener("touchstart", (e) => {
+startX = e.touches[0].clientX;
+isDragging = true;
+});
+
+carritoPanel.addEventListener("touchmove", (e) => {
+if (!isDragging) return;
+
+currentX = e.touches[0].clientX;
+let diff = currentX - startX;
+
+if (diff > 0) {
+carritoPanel.style.right = -diff + "px";
+}
+});
+
+carritoPanel.addEventListener("touchend", () => {
+isDragging = false;
+
+let diff = currentX - startX;
+
+if (diff > 100) {
+carritoPanel.classList.remove("activo");
+}
+
+carritoPanel.style.right = "";
+});
+
+});
 
 </script>
 
@@ -606,6 +683,9 @@ carritoPanel.classList.remove("activo")
 <body>
 
 <div class="carrito" id="carrito">
+
+<button class="cerrar-carrito" onclick="cerrarCarrito()">✕</button>
+
 <h2>Carrito</h2>
 <div id="items"></div>
 <h3>Total: RD$ <span id="total">0</span></h3>
@@ -627,7 +707,7 @@ carritoPanel.classList.remove("activo")
 <a href="#suplementos">Suplementos</a>
 <a href="#planes">Planes</a>
 
-<div class="carrito-icon" onclick="abrirCarrito()">
+<div class="carrito-icon" onclick="abrirCarrito(event)">
 🛒 <span id="contador">0</span>
 </div>
 
