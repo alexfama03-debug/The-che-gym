@@ -111,10 +111,13 @@ height:100vh;
 background:linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,.9)),
 url('logo.jpeg');
 background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
 display:flex;
 align-items:center;
 justify-content:center;
 text-align:center;
+padding:20px;
 }
 
 .hero h1{
@@ -362,6 +365,24 @@ overflow-x:visible;
 .card{
 min-width:250px;
 }
+}
+
+@media (max-width:768px){
+
+.hero{
+background-size:contain; /* evita que se corte */
+background-position:center;
+padding:40px 20px;
+}
+
+.hero h1{
+font-size:35px;
+}
+
+.hero p{
+font-size:16px;
+}
+
 }
 
 .social{
